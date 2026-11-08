@@ -1,0 +1,13 @@
+# 金鑰：任何 .env 變體都不進 git，只允許範本
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+venv/
+__pycache__/
+
+# macOS / exFAT 雜檔
+._*
+.DS_Store

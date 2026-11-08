@@ -1,0 +1,19 @@
+# 沿用 gitleaks 內建規則（已含 Anthropic sk-ant-），再補 LINE 專用規則
+[extend]
+useDefault = true
+
+[[rules]]
+id = "line-channel-secret"
+description = "LINE Channel secret（32 碼 hex）"
+regex = '''(?i)line[_-]?channel[_-]?secret['"]?\s*[:=]\s*['"]?([0-9a-f]{32})'''
+secretGroup = 1
+
+[[rules]]
+id = "line-channel-access-token"
+description = "LINE Channel access token"
+regex = '''(?i)line[_-]?channel[_-]?access[_-]?token['"]?\s*[:=]\s*['"]?([A-Za-z0-9+/=]{100,})'''
+secretGroup = 1
+
+[allowlist]
+description = "範本檔只有假值"
+paths = ['''\.env\.example$''']
