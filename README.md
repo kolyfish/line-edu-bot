@@ -15,10 +15,13 @@ LINE ID：`@574gwhfk`｜部署：Render（Singapore）
 
 ## Demo
 
-<!-- 把手機截圖放到 docs/images/ 後取消註解 -->
-<!-- <img src="docs/images/demo-chat.png" width="320"> <img src="docs/images/demo-group.png" width="320"> -->
+| ① 學生卡題 → 先問想法、給第一個提示 | ② 學生答錯 → 指出哪裡偏了，不給答案 |
+|:---:|:---:|
+| <img src="docs/images/demo-chat-1.png" width="320"> | <img src="docs/images/demo-chat-2.png" width="320"> |
 
-實際對話紀錄（Claude Sonnet 5.5，每輪約 3 秒）：
+學生回答「2 和 3」（正負號錯誤），Bot 先肯定「相乘 = 6 沒問題」，再引導「相乘為正 → 同號；相加為負 → 都是負的」，讓學生自己修正。
+
+另一段對話紀錄（Claude Sonnet 5.5，每輪約 3 秒）：
 
 ```
 學生：二次函數 y = x² - 4x + 1 的頂點是多少？

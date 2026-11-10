@@ -162,7 +162,8 @@
 - 驗證: 未登入可讀 README；`raw.githubusercontent.com/.../.env` 回 404
 
 **待辦**
-- [ ] 手機截圖放 `docs/images/`，取消 README Demo 區註解
+- [x] 一對一引導對話截圖放進 README（demo-chat-1/2.png）
+- [ ] 群組 @Bot 截圖（demo-group.png）
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
 - [ ] LINE Developers → Messaging API → 「Allow bot to join group chats」設 ON（要用群組功能才需要）
 - [ ] 填 `.env`：Channel secret（Basic settings）、Channel access token（Messaging API → Issue）、Anthropic API key
