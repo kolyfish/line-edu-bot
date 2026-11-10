@@ -139,6 +139,12 @@
 - 驗證: 真實 3 輪二次函數引導對話（每輪約 3 秒，會糾正學生把 m 當成 x）；mock 改成「思考+文字」兩區塊後 13 情境全過
 - 教訓: mock 要照真實 API 回傳形狀寫，否則測試全綠、上線全掛
 
+**11. 手機實測：能回覆但要等約 10 秒**
+- 判斷: Render Free 喚醒或剛部署完的第一則 + Claude 約 3 秒 [推測]
+- 決策: 加 LINE 載入動畫（`show_loading_animation`，20 秒）。原因: 等待時間壓不太下來，但讓學生看到「···」就不會以為壞掉而重複傳
+- 注意: 只有一對一聊天室支援，群組不呼叫；失敗只記 warning，不影響回覆
+- 驗證: 模擬 14 情境全過；動畫只在一對一提問觸發（幫助/清除/群組不觸發）
+
 **待辦**
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
 - [ ] LINE Developers → Messaging API → 「Allow bot to join group chats」設 ON（要用群組功能才需要）
@@ -157,3 +163,4 @@
 - 2026-11-08：金鑰防漏（gitignore + pre-commit + pre-push + gitleaks），首次推上 GitHub
 - 2026-11-10：部署 Render 上線，LINE Webhook 啟用
 - 2026-11-10：修 Sonnet 5.5 ThinkingBlock crash；effort low、fallback、max_tokens 4000
+- 2026-11-10：一對一提問時顯示 LINE 載入動畫

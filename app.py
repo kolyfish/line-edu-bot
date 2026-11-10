@@ -14,6 +14,7 @@ from linebot.v3.messaging import (  # noqa: E402
     Configuration,
     MessagingApi,
     ReplyMessageRequest,
+    ShowLoadingAnimationRequest,
     TextMessage,
 )
 from linebot.v3.webhooks import MessageEvent, TextMessageContent  # noqa: E402
@@ -59,6 +60,22 @@ def extract_group_question(message: TextMessageContent) -> str | None:
     return text.strip()
 
 
+def show_typing(user_id: str) -> None:
+    """
+    在聊天室顯示「···」載入動畫，讓學生知道 Bot 在想
+
+    原因: Claude 回覆要 3 秒以上，Render 休眠喚醒更久，沒動畫學生會以為壞掉而重複傳
+    注意: LINE 只支援一對一聊天室，群組呼叫會失敗；動畫只是體驗加分，失敗記 log 不中斷回覆
+    """
+    try:
+        with ApiClient(configuration) as api_client:
+            MessagingApi(api_client).show_loading_animation(
+                ShowLoadingAnimationRequest(chat_id=user_id, loading_seconds=20)
+            )
+    except Exception as e:
+        logger.warning(f"載入動畫失敗 user={user_id}: {type(e).__name__}: {e}")
+
+
 def split_reply(text: str) -> list[TextMessage]:
     chunks = [text[i : i + CHUNK_SIZE] for i in range(0, len(text), CHUNK_SIZE)] or [""]
     return [TextMessage(text=c) for c in chunks[:MAX_REPLY_MESSAGES]]
@@ -100,6 +117,8 @@ def handle_message(event: MessageEvent):
     elif user_message in HELP_COMMANDS or not user_message:
         reply_text = get_help_message()
     else:
+        if source.type == "user":
+            show_typing(user_id)
         reply_text = get_ai_response(user_id, user_message)
 
     with ApiClient(configuration) as api_client:
