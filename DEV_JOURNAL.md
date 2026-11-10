@@ -128,8 +128,18 @@
 - 坑: 「Use webhook」開關沒有 API，只能在 LINE Developers 手動開（API 回 `active: false` 可偵測）
 - 驗證: 首頁 200、假簽章 400、Webhook active=true
 
+**10. 儲值後首次真實呼叫：抓到 ThinkingBlock crash**
+- 發現: Sonnet 5.5 預設開 adaptive thinking，`resp.content[0]` 是 `ThinkingBlock`，`.text` 直接 AttributeError
+- 嚴重性: 這行在 try 外 → 上線後每則提問都讓 handler 例外，Bot 完全不回應（mock 測試抓不到，因為 mock 只回 text 區塊）
+- 修正: 只取 `type == "text"` 區塊；空回覆視為失敗；整段包進 try
+- 決策: `output_config.effort = "low"`。原因: 官方建議聊天用 low，Sonnet 5.5 預設 high 太慢太貴
+- 決策: `max_tokens` 1500 → 4000。原因: 思考 token 也算在內，太小會只思考完沒答案
+- 決策: 開 server-side fallback（`fallbacks="default"`）。原因: 化學/生物題可能被安全分類器誤判拒答
+- 決策: 歷史只存文字不存思考區塊。原因: deque 截掉前文後思考區塊會跟對話對不上
+- 驗證: 真實 3 輪二次函數引導對話（每輪約 3 秒，會糾正學生把 m 當成 x）；mock 改成「思考+文字」兩區塊後 13 情境全過
+- 教訓: mock 要照真實 API 回傳形狀寫，否則測試全綠、上線全掛
+
 **待辦**
-- [ ] Anthropic Console 儲值（Add funds）
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
 - [ ] LINE Developers → Messaging API → 「Allow bot to join group chats」設 ON（要用群組功能才需要）
 - [ ] 填 `.env`：Channel secret（Basic settings）、Channel access token（Messaging API → Issue）、Anthropic API key
@@ -146,3 +156,4 @@
 - 2026-11-08：新增 docs/ 三份文件；.gitignore 排除 ._* 與 .DS_Store
 - 2026-11-08：金鑰防漏（gitignore + pre-commit + pre-push + gitleaks），首次推上 GitHub
 - 2026-11-10：部署 Render 上線，LINE Webhook 啟用
+- 2026-11-10：修 Sonnet 5.5 ThinkingBlock crash；effort low、fallback、max_tokens 4000

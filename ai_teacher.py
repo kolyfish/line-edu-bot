@@ -64,19 +64,29 @@ def get_ai_response(user_id: str, user_message: str) -> str:
         messages = messages[1:]
 
     try:
-        resp = client.messages.create(
+        # 決策: 開 server-side fallback，原因: 化學/生物題偶爾被安全分類器誤判拒答，自動改由其他模型回答
+        resp = client.beta.messages.create(
+            betas=["server-side-fallback-2026-07-01"],
+            fallbacks="default",
             model=MODEL,
-            max_tokens=1500,
+            # 思考 token 也算在 max_tokens 裡，設太小會只思考完就被截斷、沒有答案
+            max_tokens=4000,
+            # 決策: 聊天用 low effort，原因: Sonnet 5.5 預設 high，教學問答不需要深度推理，low 更快更省
+            output_config={"effort": "low"},
             system=SYSTEM_PROMPT,
             messages=messages,
         )
+        # 注意: Sonnet 5.5 預設開思考，content[0] 是 ThinkingBlock 不是文字（講義寫法會直接 crash）
+        answer = "".join(b.text for b in resp.content if b.type == "text").strip()
+        if not answer:
+            raise ValueError(f"回覆沒有文字內容 stop_reason={resp.stop_reason}")
     except Exception as e:
         logger.error(f"Claude 呼叫失敗 user={user_id}: {type(e).__name__}: {e}")
         history.pop()
         # 決策: 不把 str(e) 回給學生（講義做法），原因: 可能洩漏 API 錯誤細節
         return "抱歉，我現在有點忙，請稍後再問一次 🙏"
 
-    answer = resp.content[0].text
+    # 歷史只存文字、不存思考區塊，原因: deque 截掉舊訊息時，思考區塊會跟對話前文對不上
     history.append({"role": "assistant", "content": answer})
     return answer
 
