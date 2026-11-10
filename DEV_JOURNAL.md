@@ -120,6 +120,14 @@
 - 驗證: 用假金鑰的測試 repo 跑 6 個情境（add -f .env、程式寫死 secret、key 寫進 md、--no-verify 後 push、範本可 commit、正常 push）全過
 - Anthropic key 格式驗證通過，但帳戶餘額 $0 → API 回 400 credit balance too low，待儲值
 
+**9. 推 GitHub + 部署 Render**
+- GitHub：`kolyfish/line-edu-bot`（private），pre-push 掃描通過，遠端確認無 `.env`
+- 坑: `gh` 鑰匙圈 token 失效，`gh auth login` 授權完沒等到 `✓ Logged in` 就結束 → 先 logout 再 login
+- Render：Singapore / Free / `gunicorn -w 1 app:app`，網址 `https://line-edu-bot.onrender.com`
+- Webhook：用 LINE API `PUT /v2/bot/channel/webhook/endpoint` 設 URL、`POST .../webhook/test` 驗證成功
+- 坑: 「Use webhook」開關沒有 API，只能在 LINE Developers 手動開（API 回 `active: false` 可偵測）
+- 驗證: 首頁 200、假簽章 400、Webhook active=true
+
 **待辦**
 - [ ] Anthropic Console 儲值（Add funds）
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
@@ -137,3 +145,4 @@
 - 2026-11-08：拆出 ai_teacher.py、加 Procfile、清除/幫助指令、步驟 E 群組支援、長訊息分段
 - 2026-11-08：新增 docs/ 三份文件；.gitignore 排除 ._* 與 .DS_Store
 - 2026-11-08：金鑰防漏（gitignore + pre-commit + pre-push + gitleaks），首次推上 GitHub
+- 2026-11-10：部署 Render 上線，LINE Webhook 啟用
