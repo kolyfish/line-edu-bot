@@ -154,6 +154,13 @@
 - 坑: 測試裡的假 `ANTHROPIC_API_KEY="x"` 被 gitleaks generic 規則誤判 → 行尾加 `# gitleaks:allow`
 - 公開前檢查: gitleaks 掃完整歷史無洩漏、歷史不含 `.env` 真實值、追蹤檔案無個資關鍵字
 
+**13. 公開 repo**
+- 決策: commit 作者 Gmail 改成 GitHub 匿名信箱（`28769721+kolyfish@users.noreply.github.com`）。原因: 公開後信箱會被爬蟲抓去發垃圾信
+- 做法: `git filter-branch --env-filter` 改寫 5 個 commit；改寫前後比對每個 commit 的 tree hash 完全相同 → 只改了信箱
+- 坑: exFAT 上 `git gc` 寫新 pack 時，macOS 當場產生 `._pack-*.idx`，git 當成真索引讀 → `non-monotonic index`。刪掉 `.git` 內的 `._*` 修復，並 `git config gc.auto 0` 防背景 gc 再壞
+- 公開後: 開 GitHub Secret Scanning + Push Protection（第四道防線，伺服器端）
+- 驗證: 未登入可讀 README；`raw.githubusercontent.com/.../.env` 回 404
+
 **待辦**
 - [ ] 手機截圖放 `docs/images/`，取消 README Demo 區註解
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
@@ -175,3 +182,4 @@
 - 2026-11-10：修 Sonnet 5.5 ThinkingBlock crash；effort low、fallback、max_tokens 4000
 - 2026-11-10：一對一提問時顯示 LINE 載入動畫
 - 2026-11-10：作品集 README、pytest 測試套件
+- 2026-11-10：commit 信箱改匿名、repo 改 Public、開 Secret Scanning
