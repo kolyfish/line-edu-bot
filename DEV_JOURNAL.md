@@ -15,6 +15,8 @@
   ├── .githooks/        # pre-commit / pre-push 金鑰防漏
   ├── .gitleaks.toml    # gitleaks 規則（內建 + LINE）
   ├── .env.example      # 金鑰範本（可進 git）
+  ├── README.md         # 作品集門面
+  ├── tests/            # pytest：webhook 端到端 18 案例
   ├── docs/             # 01 使用手冊、02 專案教學、03 類似專案參考指南
   ├── requirements.txt  # Render 部署依此安裝
   ├── .env              # 金鑰（不進 git）
@@ -145,7 +147,15 @@
 - 注意: 只有一對一聊天室支援，群組不呼叫；失敗只記 warning，不影響回覆
 - 驗證: 模擬 14 情境全過；動畫只在一對一提問觸發（幫助/清除/群組不觸發）
 
+**12. 作品集化**
+- 做了: `README.md`（demo 對話、mermaid 架構圖、5 個講義問題的修正、金鑰三道防線、本機執行、限制與下一步）
+- 做了: 把暫存區的模擬腳本改成 `tests/test_bot.py`（pytest 18 案例），新增 `requirements-dev.txt`
+- 原因: README 宣稱「測過」就要能讓看的人自己跑一次；暫存腳本會被系統清掉
+- 坑: 測試裡的假 `ANTHROPIC_API_KEY="x"` 被 gitleaks generic 規則誤判 → 行尾加 `# gitleaks:allow`
+- 公開前檢查: gitleaks 掃完整歷史無洩漏、歷史不含 `.env` 真實值、追蹤檔案無個資關鍵字
+
 **待辦**
+- [ ] 手機截圖放 `docs/images/`，取消 README Demo 區註解
 - [ ] 本地測試用 `ngrok http 5001`（不是講義的 5000）
 - [ ] LINE Developers → Messaging API → 「Allow bot to join group chats」設 ON（要用群組功能才需要）
 - [ ] 填 `.env`：Channel secret（Basic settings）、Channel access token（Messaging API → Issue）、Anthropic API key
@@ -164,3 +174,4 @@
 - 2026-11-10：部署 Render 上線，LINE Webhook 啟用
 - 2026-11-10：修 Sonnet 5.5 ThinkingBlock crash；effort low、fallback、max_tokens 4000
 - 2026-11-10：一對一提問時顯示 LINE 載入動畫
+- 2026-11-10：作品集 README、pytest 測試套件
